@@ -1,6 +1,7 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
 import { AiFillEye } from "react-icons/ai";
+import { Link } from "react-router-dom";
 import auth from "../../Firebase/firebase.config";
 
 const Register = () => {
@@ -9,15 +10,20 @@ const Register = () => {
   const[regSuccess, setRegSuccess] = useState('');
 
   const[showPass, setShowPass] = useState(false);
+  
 
  const handleRegister = event =>{
         event.preventDefault();
       const form = event.target;
 
+      const accepted = event.target.terms.checked;
+
       const email = form.email.value;
       const password = form.password.value;
 
-      console.log(email, password);
+      // console.log(email, password, accepted);
+
+      
 
       if(password.length < 6){
         setRegError('Password should be at least 6 character');
@@ -25,6 +31,10 @@ const Register = () => {
       }
       else if(!/[A-Z]/.test(password)){
         setRegError('Your password should be One Uppercase');
+        return;
+      }
+      else if(! accepted){
+        setRegError('Please Accept our terms and condition!');
         return;
       }
     
@@ -37,6 +47,14 @@ const Register = () => {
         const user = result.user;
         console.log(user);
         setRegSuccess('User Created Successfully!!')
+
+        // send verification email
+         sendEmailVerification( user)
+        .then(()=>{
+          alert('Plz check your email and verify your account');
+        })
+
+
       })
       .catch(error =>{
         console.log(error.message)
@@ -49,7 +67,7 @@ const Register = () => {
   return (
     <section>
       <h2 className="text-xl font-bold text-center">---Please Register---</h2>
-      <div className="h-[70vh] flex justify-center items-center">
+      <div className="h-[80vh] flex justify-center items-center">
         <form onSubmit={handleRegister} className="relative flex w-96 flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
           <div className="relative mx-4 -mt-6 mb-4 grid h-28 place-items-center overflow-hidden rounded-xl bg-gradient-to-tr from-pink-600 to-pink-400 bg-clip-border text-white shadow-lg shadow-pink-500/40">
             <h3 className="block font-sans text-3xl font-semibold leading-snug tracking-normal text-white antialiased">
@@ -90,6 +108,7 @@ const Register = () => {
                 >
                   <input
                     type="checkbox"
+                    name="terms"
                     className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-pink-500 checked:bg-pink-500 checked:before:bg-pink-500 hover:before:opacity-10"
                     id="checkbox"
                   />
@@ -114,7 +133,7 @@ const Register = () => {
                   className="mt-px cursor-pointer select-none font-light text-gray-700"
                   htmlFor="checkbox"
                 >
-                  Remember Me
+                  Accept terms and condition !
                 </label>
               </div>
             </div>
@@ -123,12 +142,12 @@ const Register = () => {
             <input className="block w-full select-none rounded-lg bg-gradient-to-tr from-pink-600 to-pink-400 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"  type="submit" value="Register" />
             <p className="mt-6 flex justify-center font-sans text-sm font-light leading-normal text-inherit antialiased">
               Do not have an account?
-              <a
-                href="#signup"
+              <Link
+                to='/login'
                 className="ml-1 block font-sans text-sm font-bold leading-normal text-pink-500 antialiased"
               >
-                Sign up
-              </a>
+                Log in
+              </Link>
             </p>
           </div>
 
