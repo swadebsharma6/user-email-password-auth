@@ -1,7 +1,19 @@
+import { signOut } from "firebase/auth";
 import { NavLink } from "react-router-dom";
+import auth from "../../Firebase/firebase.config";
 
 
 const Header = () => {
+
+  const handleLogOut = ()=>{
+      signOut(auth)
+      .then(()=>{
+        alert('User Sign up successfully')
+      })
+      .catch(error =>{
+        console.log(error.message)
+      })
+  }
 
     const menu = <>
             <li><NavLink
@@ -50,7 +62,7 @@ const Header = () => {
           </ul>
         </div>
         <div className="navbar-end">
-          <a className="btn">Button</a>
+          <button onClick={handleLogOut} className="btn btn-sm btn-primary">Log Out</button>
         </div>
       </div> 
         </nav>
